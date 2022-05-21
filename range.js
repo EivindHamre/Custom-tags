@@ -5,8 +5,10 @@ class DoubleRange extends HTMLElement {
         super()
     }
     connectedCallback() {
-        this.min = parseInt(this.attributes.min?.value) || 0;
-        this.max = parseInt(this.attributes.max?.value) || 100;
+        this.value = {
+            min: parseInt(this.attributes.min?.value) || 0,
+            max: parseInt(this.attributes.max?.value) || 100
+        }
         this.step = parseInt(this.attributes.step?.valueAsNumber) || 1;
         this.lower = parseInt(this.attributes.lower?.valueAsNumber) || 0;
         this.upper = parseInt(this.attributes.upper?.valueAsNumber) || 100;
@@ -14,20 +16,20 @@ class DoubleRange extends HTMLElement {
         const shadowRoot = this.attachShadow({ mode: 'open' })
         const root = document.createElement('div')
         root.innerHTML = `
-            <input type="range" min="${this.lower}" max="${this.max - this.step}" step="${this.step}" value="${this.min}" id="lower" />
-            <input type="range" min="${this.min + this.step}" max="${this.upper}" step="${this.step}" value="${this.max}" id="upper" />
+            <input type="range" min="${this.lower}" max="${this.value.max - this.step}" step="${this.step}" value="${this.value.min}" id="lower" />
+            <input type="range" min="${this.value.min + this.step}" max="${this.upper}" step="${this.step}" value="${this.value.max}" id="upper" />
         `
         root.qs("#lower").oninput = (e) => {
-            this.min = e.target.valueAsNumber
-            root.qs("#upper").min = this.min + this.step
-            root.qs("#upper").style.width = `${100 - 100 * this.min / (this.upper - this.lower)}%`
-            root.qs('#upper').style.marginLeft = `${100 * this.min / (this.upper - this.lower)}%`
+            this.value.min = e.target.valueAsNumber
+            root.qs("#upper").min = this.value.min + this.step
+            root.qs("#upper").style.width = `${100 - 100 * this.value.min / (this.upper - this.lower)}%`
+            root.qs('#upper').style.marginLeft = `${100 * this.value.min / (this.upper - this.lower)}%`
         }
         root.qs("#upper").oninput = (e) => {
-            this.max = e.target.valueAsNumber
-            root.qs("#lower").max = this.max - this.step
-            root.qs("#lower").style.width = `${100 * this.max / (this.upper - this.lower)}%`
-            root.qs('#lower').style.marginRight = `${100 * (1 - this.max / (this.upper - this.lower))}%`
+            this.value.max = e.target.valueAsNumber
+            root.qs("#lower").max = this.value.max - this.step
+            root.qs("#lower").style.width = `${100 * this.value.max / (this.upper - this.lower)}%`
+            root.qs('#lower').style.marginRight = `${100 * (1 - this.value.max / (this.upper - this.lower))}%`
         }
         shadowRoot.appendChild(root)
 
@@ -48,12 +50,12 @@ class DoubleRange extends HTMLElement {
                 pointer-events: none;
             }
             #lower{
-                width: ${100 * this.max / (this.upper - this.lower)}%;
-                margin-right: ${100 * this.min / (this.upper - this.lower)}%;
+                width: ${100 * this.value.max / (this.upper - this.lower)}%;
+                margin-right: ${100 * this.value.min / (this.upper - this.lower)}%;
             }
             #upper{
-                width: ${100 - 100 * this.min / (this.upper - this.lower)}%;
-                margin-left: ${100 * this.min / (this.upper - this.lower)}%;
+                width: ${100 - 100 * this.value.min / (this.upper - this.lower)}%;
+                margin-left: ${100 * this.value.min / (this.upper - this.lower)}%;
             }
             ::-webkit-slider-thumb{
                 pointer-events: all;
@@ -62,7 +64,7 @@ class DoubleRange extends HTMLElement {
             }
             `
         shadowRoot.appendChild(style)
-        // this.oninput = () => console.log(this.min, this.max)
+        //this.oninput = () => console.log(this.value.min, this.value.max)
     }
 }
 
