@@ -27,6 +27,7 @@ class DoubleRange extends HTMLElement {
             this.max = e.target.valueAsNumber
             root.qs("#lower").max = this.max - this.step
             root.qs("#lower").style.width = `${100 * this.max / (this.upper - this.lower)}%`
+            root.qs('#lower').style.marginRight = `${100 * (1 - this.max / (this.upper - this.lower))}%`
         }
         shadowRoot.appendChild(root)
 
@@ -44,23 +45,20 @@ class DoubleRange extends HTMLElement {
             }
             input{
                 position: absolute;
+                pointer-events: none;
             }
             #lower{
                 width: ${100 * this.max / (this.upper - this.lower)}%;
-                margin-left: 0;
+                margin-right: ${100 * this.min / (this.upper - this.lower)}%;
             }
             #upper{
                 width: ${100 - 100 * this.min / (this.upper - this.lower)}%;
                 margin-left: ${100 * this.min / (this.upper - this.lower)}%;
             }
-            ::-webkit-slider-container{
-                pointer-events: none;
-            }
-            ::-webkit-slider-runnable-track{
-                pointer-events: none;
-            }
             ::-webkit-slider-thumb{
                 pointer-events: all;
+                position: relative;
+                z-index: 1;
             }
             `
         shadowRoot.appendChild(style)
